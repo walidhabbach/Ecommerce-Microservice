@@ -1,0 +1,95 @@
+name: order service CI/CD 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    name: Compile project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'  # Use a consistent distribution
+
+      - name: Running Compile
+        working-directory: ./services/order-service
+        run: mvn clean compile
+
+  tests:
+    runs-on: ubuntu-latest
+    name: Unit tests
+    needs: compile  # Specify dependency on the compile job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Running Unit Tests
+        working-directory: ./services/order-service
+        run: mvn clean test   
+
+  build:
+    needs: [tests]
+    runs-on: ubuntu-latest
+    name: Build project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        working-directory: ./services/order-service
+        run: mvn install -DskipTests --file ./pom.xml
+
+      - name: Update dependency graph
+        working-directory: ./services/order-service
+        run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.1:graph
+  
+  build-image:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-order-service:latest ./services/order-service
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-order-service:latest
