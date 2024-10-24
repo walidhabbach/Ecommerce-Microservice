@@ -4,9 +4,8 @@ This repository contains the source code and Kubernetes deployment manifests for
 
 ## Project Structure
 
-Ecommerce-Microservice-AKS```plaintext
-│
-├───.idea                      # IDE configuration files
+Ecommerce-Microservice-AKS
+```plaintext
 ├───kubernetes                  # Kubernetes manifests and infrastructure configurations
 │   ├───infrastructure
 │   │   ├───alert-manager       # AlertManager configuration for alerting
