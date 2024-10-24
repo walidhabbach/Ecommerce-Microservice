@@ -4,7 +4,6 @@ This repository contains the source code and Kubernetes deployment manifests for
 
 ## Project Structure
 
-Ecommerce-Microservice-AKS
 ```plaintext
 ├───kubernetes                  # Kubernetes manifests and infrastructure configurations
 │   ├───infrastructure
@@ -31,7 +30,7 @@ Ecommerce-Microservice-AKS
 │   └───terraform               # Terraform configurations for AKS
 ├───services                    # Source code for each microservice
 └───kube-layer-manager.sh       # Script to automate Kubernetes deployments
-
+```
 
 
 ## Microservices Overview
