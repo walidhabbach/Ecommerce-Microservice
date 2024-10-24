@@ -1,0 +1,10 @@
+
+kubernetes/terraform/.terraform/providers/registry.terraform.io/hashicorp/azurerm/4.0.1/windows_amd64/LICENSE.txt
+kubernetes/terraform/.terraform.lock.hcl
+kubernetes/terraform/.terraform/providers/registry.terraform.io/hashicorp/azurerm/4.0.1/windows_amd64/terraform-provider-azurerm_v4.0.1_x5.exe
+kubernetes/terraform/.terraform/providers/registry.terraform.io/hashicorp/local/2.5.1/windows_amd64/terraform-provider-local_v2.5.1_x5.exe
+kubernetes/terraform/terraform.tfstate
+kubernetes/terraform/terraform.tfstate.backup
+kubernetes/terraform/kubeconfig
+**/secret.yaml
+kubernetes/vars.json

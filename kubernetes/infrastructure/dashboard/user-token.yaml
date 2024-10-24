@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: kubernetes-dashboard
+  name: dashboard-user-token
+  annotations:
+    kubernetes.io/service-account.name: dashboard-user
+type: kubernetes.io/service-account-token

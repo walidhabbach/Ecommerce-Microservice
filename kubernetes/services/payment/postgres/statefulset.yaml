@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: postgres-payment
+  name: postgres-payment
+spec:
+  serviceName: postgres-payment-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-payment 
+  template:
+    metadata:
+      labels:
+        app: postgres-payment
+    spec:
+      containers:
+        - args:
+            - -p
+            - "5432"
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata 
+            - name: POSTGRES_DB
+              value: "payment"
+            - name: POSTGRES_PASSWORD
+              value: "2002"
+            - name: POSTGRES_USER
+              value: "walid"
+          image: postgres:16
+          name: postgres
+          ports:
+            - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - name: postgres-payment-storage
+              mountPath: /var/lib/postgresql/data 
+      volumes:
+        - name: postgres-payment-storage
+          persistentVolumeClaim:
+            claimName: postgres-payment-pvc 

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-deployment
+  template:
+    metadata:
+      labels:
+        app: order-deployment
+    spec:
+      containers:
+        - name: order 
+          imagePullPolicy: Always
+          image: shogun101/ecommerce-order-service:latest
+          ports:
+            - containerPort: 8070
+          env:  
+          - name: SPRING_CONFIG_IMPORT
+            value: "configserver:http://config-service:8888" 
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while ! curl -s http://discovery-service:8761/actuator/health | grep '"status":"UP"'; do
+                echo "Waiting for config-service to be ready..."
+                sleep 5
+              done
+              echo "order-service is ready. Starting order service."
+              java -jar /app/app.jar 
+          resources: 
+            requests:
+              cpu: "200m"    
+              memory: "250Mi" 
+            limits:
+              cpu: "500m"
+              memory: "500Mi"

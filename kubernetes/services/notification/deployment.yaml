@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-deployment
+  template:
+    metadata:
+      labels:
+        app: notification-deployment
+    spec:
+      containers:
+      - name: notification
+        image: shogun101/ecommerce-notification-service:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "300Mi"
+        ports:
+        - containerPort: 8040
+        env:
+          - name: SPRING_CONFIG_IMPORT
+            value: "optional:configserver:http://config-service:8888" 
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            while ! curl -s http://discovery-service:8761/actuator/health | grep '"status":"UP"'; do
+              echo "Waiting for config-service to be ready..."
+              sleep 5
+            done
+            echo "notification-service is ready. Starting notification service."
+            java -jar /app/app.jar 
+        
+ 

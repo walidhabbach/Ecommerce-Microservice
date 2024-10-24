@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discovery-deployment
+  template:
+    metadata:
+      labels:
+        app: discovery-deployment
+    spec: 
+      containers:
+      - name: discovery
+        imagePullPolicy: Always
+        image: shogun101/ecommerce-discovery-service:latest
+        ports:
+        - containerPort: 8761
+        env:
+          - name: SPRING_CONFIG_IMPORT
+            value: "configserver:http://config-service:8888" 
+        resources: 
+          limits:
+            memory: "400Mi"
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            while ! curl -s http://config-service:8888/actuator/health | grep '"status":"UP"'; do
+              echo "Waiting for config-service to be ready..."
+              sleep 5
+            done
+            echo "discovery-service is ready. Starting discovery service."
+            java -jar /app/app.jar 
+       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8761
+      targetPort: 8761
+  selector:
+    app: discovery-deployment

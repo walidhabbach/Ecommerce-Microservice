@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-zipkin
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deployment-zipkin
+  template:
+    metadata:
+      labels:
+        app: deployment-zipkin
+    spec:
+      containers:
+        - name: zipkin
+          imagePullPolicy: IfNotPresent
+          image: openzipkin/zipkin
+          ports:
+            - containerPort: 9411
+          env:
+          - name: ZIPKIN_SERVICE_HOST
+            value: "zipkin-service"
+          resources: 
+            limits:
+              memory: "300Mi"
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: zipkin-service
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - port: 9411
+      targetPort: 9411
+  selector:
+    app: deployment-zipkin
+
+

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: postgres-order
+  name: postgres-order
+spec:
+  serviceName: postgres-order-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-order 
+  template:
+    metadata:
+      labels:
+        app: postgres-order
+    spec:
+      containers:
+        - args:
+            - -p
+            - "5432"
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_DB
+              value: "orders"
+            - name: POSTGRES_PASSWORD
+              value: "2002"
+            - name: POSTGRES_USER
+              value: "walid"
+          image: postgres:16
+          name: postgres
+          ports:
+            - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - name: postgres-order-storage
+              mountPath: /var/lib/postgresql/data 
+      volumes:
+        - name: postgres-order-storage
+          persistentVolumeClaim:
+            claimName: postgres-order-pvc 
+      
+ 

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-storage-pv
+spec:
+  capacity:
+    storage: "100Mi"
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/storage/messageBroker"
+  claimRef:
+    name: kafka-storage-pvc
+    namespace: default
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-storage-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "100Mi"
+  volumeName: kafka-storage-pv

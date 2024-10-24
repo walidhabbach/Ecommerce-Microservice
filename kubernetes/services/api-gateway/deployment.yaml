@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway-deployment
+  template:
+    metadata:
+      labels:
+        app: api-gateway-deployment
+    spec:
+      containers:
+        - name: api-gateway
+          imagePullPolicy: Always
+          image: shogun101/ecommerce-api-gateway-service:latest
+          ports:
+            - containerPort: 8222
+          env: 
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-service:8888"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while ! curl -s http://discovery-service:8761/actuator/health | grep '"status":"UP"'; do
+                echo "Waiting for config-service to be ready..."
+                sleep 5
+              done
+              echo "customer-service is ready. Starting customer service."
+              java -jar /app/app.jar           
+          resources:
+            limits:
+              memory: "400Mi"

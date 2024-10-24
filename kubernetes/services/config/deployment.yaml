@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-deployment
+  template:
+    metadata:
+      labels:
+        app: config-deployment
+    spec:
+      containers:
+      - name: config
+        imagePullPolicy: Always
+        image: shogun101/ecommerce-config-service:latest
+        ports:
+        - containerPort: 8888
+        env:
+          # Config service
+          - name: CONFIG_SERVER_PORT
+            value: "8888"
+          - name: CONFIG_LOCATION
+            value: "classpath:/configurations/kubernetes" 
+
+          # # All services
+          # - name: DISCOVERY_EUREKA_INSTANCE_HOSTNAME
+          #   value: "discovery-service"
+          # - name: DISCOVERY_SERVER_PORT
+          #   value: "8761"
+          # - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+          #   value: "http://zipkin-service:9411/api/v2/spans" 
+  
+          # # Customer service
+          # - name: CUSTOMER_SERVER_PORT
+          #   value: "8090"
+          # - name: CUSTOMER_SPRING_DATA_MONGODB_URI
+          #   value: "mongodb://mongo-customer-service:27017/customer?authSource=admin"
+
+          # # Api gateway service  
+          # - name: API_GATEWAY_SERVER_PORT
+          #   value: "8222" 
+
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_0_ID
+          #   value: "customer-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
+          #   value: "http://customer-service:8090"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0
+          #   value: "Path=/api/customers/**"
+            
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_1_ID
+          #   value: "payment-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_1_URI
+          #   value: "http://payment-service:8060"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0
+          #   value: "Path=/api/payments/**"
+            
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_2_ID
+          #   value: "product-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_2_URI
+          #   value: "http://product-service:8050"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0
+          #   value: "Path=/api/products/**"
+
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_3_ID
+          #   value: "order-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_3_URI
+          #   value: "http://order-service:8070"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0
+          #   value: "Path=/api/orders/**" 
+            
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_4_ID
+          #   value: "order-lignes-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_4_URI
+          #   value: "http://order-service:8070"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_4_PREDICATES_0
+          #   value: "Path=/api/order-lines/**"
+              
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_5_ID
+          #   value: "categorie-service"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_5_URI
+          #   value: "http://product-service:8050"
+          # - name: SPRING_CLOUD_GATEWAY_ROUTES_5_PREDICATES_0
+          #   value: "Path=/api/categories/**"
+   
+    
+        resources:
+          limits:
+            memory: "300Mi"
+

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-notification
+  labels:
+    app: mongodb-notification
+spec:
+  serviceName: "mongo-notification-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-notification
+  template:
+    metadata:
+      labels:
+        app: mongodb-notification
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest 
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-persistent-storage
+          mountPath: /data/db/notification
+    
+      volumes:
+      - name: mongo-persistent-storage
+        persistentVolumeClaim:
+          claimName: mongo-notification-pvc
+          

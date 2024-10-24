@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: postgres-product
+  name: postgres-product
+spec:
+  serviceName: postgres-product-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-product 
+  template:
+    metadata:
+      labels:
+        app: postgres-product
+    spec:
+      containers:
+        - args:
+            - -p
+            - "5432"
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata/product
+            - name: POSTGRES_DB
+              value: "product"
+            - name: POSTGRES_PASSWORD
+              value: "2002"
+            - name: POSTGRES_USER
+              value: "walid"
+          image: postgres:16
+          name: postgres
+          ports:
+            - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - name: postgres-product-storage
+              mountPath: /var/lib/postgresql/data 
+      volumes:
+        - name: postgres-product-storage
+          persistentVolumeClaim:
+            claimName: postgres-product-pvc
+      
+ 

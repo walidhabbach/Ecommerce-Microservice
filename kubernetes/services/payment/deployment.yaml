@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-deployment
+  template:
+    metadata:
+      labels:
+        app: payment-deployment
+    spec:
+      containers:
+        - name: payment
+          imagePullPolicy: Always
+          image: shogun101/ecommerce-payment-service:latest
+          ports:
+            - containerPort: 8060
+          env: 
+          - name: SPRING_CONFIG_IMPORT
+            value: "configserver:http://config-service:8888"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while ! curl -s http://discovery-service:8761/actuator/health | grep '"status":"UP"'; do
+                echo "Waiting for config-service to be ready..."
+                sleep 5
+              done
+              echo "payment-service is ready. Starting payment service."
+              java -jar /app/app.jar 
+          resources:
+            limits:
+              memory: "400Mi"

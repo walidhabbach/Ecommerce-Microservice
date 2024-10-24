@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-notification-service
+spec:
+  selector:
+    app: mongodb-notification
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  clusterIP: None

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  namespace: default
+spec:
+  serviceName: zookeeper-service
+  replicas: 1
+  selector:
+    matchLabels:
+      service: zookeeper
+  template:
+    metadata:
+      labels:
+        network/kafka-network: "true"
+        service: zookeeper
+    spec:
+      securityContext:
+        fsGroup: 1000 
+      containers:
+        - name: zookeeper
+          imagePullPolicy: IfNotPresent
+          image: confluentinc/cp-zookeeper:latest
+          ports:
+            - containerPort: 2181
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+            - name: ZOOKEEPER_DATA_DIR
+              value: "/var/lib/zookeeper"
+            - name: ZOOKEEPER_LOG_DIR
+              value: "/var/lib/zookeeper"
+            - name: ZOOKEEPER_SERVER_ID
+              value: "1"
+          resources:
+            limits:
+              memory: "300Mi"
+          volumeMounts:
+            - mountPath: /var/lib/zookeeper
+              name: zookeeper-storage-pvc
+      volumes:
+        - name: zookeeper-storage-pvc
+          persistentVolumeClaim:
+            claimName: zookeeper-storage-pvc 
+   
