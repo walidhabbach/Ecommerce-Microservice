@@ -27,7 +27,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            while ! curl -s http://discovery-service:8761/actuator/health | grep '"status":"UP"'; do
+            while ! curl -s http://config-service:8888/actuator/health | grep '"status":"UP"'; do
               echo "Waiting for config-service to be ready..."
               sleep 5
             done
