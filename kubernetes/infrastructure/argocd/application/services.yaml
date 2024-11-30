@@ -3,20 +3,33 @@ kind: Application
 metadata:
   name: service-application
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: >-
+      shogun101/ecommerce-config-service:latest,
+      shogun101/ecommerce-order-service:latest,
+      shogun101/ecommerce-customer-service:latest,
+      shogun101/ecommerce-notification-service:latest,
+      shogun101/ecommerce-payment-service:latest,
+      shogun101/ecommerce-product-service:latest,
+      shogun101/ecommerce-api-gateway-service:latest
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/update-strategy: latest
 spec:
   project: default
-
   source:
     repoURL: https://github.com/walidhabbach/Ecommerce-Microservice.git
     targetRevision: main
-    path: kubernetes/services 
+    path: kubernetes/services
     directory:
       recurse: true
-  destination: 
+  destination:
     server: https://kubernetes.default.svc
     namespace: default
-
-  # syncPolicy:  
-  #   automated:
-  #     selfHeal: true
-  #     prune: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
